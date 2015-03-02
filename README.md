@@ -5,7 +5,7 @@ etherpad Ansible playbook
 CI](http://img.shields.io/travis/erasme/ansible-etherpad.svg?style=flat)](http://travis-ci.org/erasme/ansible-etherpad)
 [![test-suite](http://img.shields.io/badge/ansible--roles--specs-ansible--etherpad-blue.svg?style=flat)](https://github.com/erasme/ansible-roles-specs/tree/master/ansible-etherpad/)
 [![Ansible
-Galaxy](http://img.shields.io/badge/galaxy-erasme.etherpad-660198.svg?style=flat)](https://galaxy.ansible.com/list#/roles/2996)
+Galaxy](http://img.shields.io/badge/galaxy-erasme.etherpad-660198.svg?style=flat)](https://galaxy.ansible.com/list#/roles/2998)
 
 This playbook will install etherpad from source.
 

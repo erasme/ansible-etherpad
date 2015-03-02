@@ -16,5 +16,6 @@ galaxy_info:
     - development
 
 dependencies:
-  - { role: erasme.nodejs }
-  - { role: erasme.nginx, when: etherpad_path != '/' }
+  - role: erasme.nodejs
+  - role: erasme.nginx
+    when: etherpad_path != '/'
