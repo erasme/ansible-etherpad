@@ -22,6 +22,10 @@ The following packages will be installed by this role :
   - build-essential
   - python-mysqldb
 
+Some MySQL server somewhere is also required.Note that this role does _not_
+depend on the mysql role, since MySQL is not required to be installed on the
+same host.
+
 Role Variables
 --------------
 
