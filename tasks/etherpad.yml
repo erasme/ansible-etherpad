@@ -2,43 +2,43 @@
   tags: test
 
 - set_fact: database_delegate_hostname="{{ inventory_hostname }}"
-  when: "'{{ etherpad.database.host }}' == 'localhost'"
+  when: "'{{ etherpad_database.host }}' == 'localhost'"
 
-- set_fact: database_delegate_hostname="{{ etherpad.database.host }}"
-  when: "'{{ etherpad.database.host }}' != 'localhost'"
+- set_fact: database_delegate_hostname="{{ etherpad_database.host }}"
+  when: "'{{ etherpad_database.host }}' != 'localhost'"
 
-- set_fact: check_port={{ etherpad.port }}
+- set_fact: check_port={{ etherpad_port }}
 
 - debug: msg="Database operation will be delegated to {{database_delegate_hostname}}"
   tags: test
 
 - name: Creates deploy user
   user:
-    name={{ etherpad.deploy_user }}
+    name={{ etherpad_deploy_user }}
     comment="Service docs user"
   notify: Restart etherpad
 
 - name: Creates deploy directory
   file:
-    path=~{{ etherpad.deploy_user }}/etherpad/
-    owner={{ etherpad.deploy_user }}
+    path=~{{ etherpad_deploy_user }}/etherpad/
+    owner={{ etherpad_deploy_user }}
     state=directory
   notify: Restart etherpad
 
 - name: Checkout app
-  sudo_user: "{{ etherpad.deploy_user }}"
+  sudo_user: "{{ etherpad_deploy_user }}"
   sudo: true
   git:
-    repo={{ etherpad.repos }}
-    dest=~{{ etherpad.deploy_user }}/etherpad/
-    version={{ etherpad.version }}
+    repo={{ etherpad_repos }}
+    dest=~{{ etherpad_deploy_user }}/etherpad/
+    version={{ etherpad_version }}
     accept_hostkey=true
   register: new_version
   ignore_errors: true
   notify: Restart etherpad
 
 - name: Gets current tag
-  shell: cd ~{{ etherpad.deploy_user }}/etherpad/ && git describe --always --tag
+  shell: cd ~{{ etherpad_deploy_user }}/etherpad/ && git describe --always --tag
   changed_when: false
   register: git_tag
 
@@ -46,19 +46,19 @@
 
 - name: Installs necessary prereqs
   apt: pkg={{ item }} state=latest
-  with_items: etherpad.packages
+  with_items: etherpad_packages
 
 - name: Creates database
-  mysql_db: name={{ etherpad.database.name }} state=present
+  mysql_db: name={{ etherpad_database.name }} state=present
   delegate_to: "{{database_delegate_hostname}}"
   register: db_created
   notify: Restart etherpad
 
 - name: Creates database user
   mysql_user:
-    user="{{ etherpad.database.user }}"
-    password="{{ etherpad.database.password }}"
-    priv="{{ etherpad.database.name }}.*:ALL"
+    user="{{ etherpad_database.user }}"
+    password="{{ etherpad_database.password }}"
+    priv="{{ etherpad_database.name }}.*:ALL"
     host="{{ inventory_hostname }}"
   delegate_to: "{{database_delegate_hostname}}"
   register: dbuser_created
@@ -66,16 +66,16 @@
 
 - name: Creates database user
   mysql_user:
-    user="{{ etherpad.database.user }}"
-    password="{{ etherpad.database.password }}"
-    priv="{{ etherpad.database.name }}.*:ALL"
+    user="{{ etherpad_database.user }}"
+    password="{{ etherpad_database.password }}"
+    priv="{{ etherpad_database.name }}.*:ALL"
     host="localhost"
   delegate_to: "{{database_delegate_hostname}}"
   register: dbuser_created
   notify: Restart etherpad
 
 - name: Create etherpad startup script
-  template: src="../templates/upstart_etherpad.conf.json.j2" dest=/etc/init/etherpad.conf mode=0644
+  template: src="../templates/upstart_etherpad_conf.json.j2" dest=/etc/init/etherpad_conf mode=0644
   notify:
     - Restart etherpad
 
@@ -85,64 +85,64 @@
 - name: Configure etherpad-lite
   template:
     src="../templates/settings.json.j2"
-    dest=~{{ etherpad.deploy_user }}/etherpad/settings.json
+    dest=~{{ etherpad_deploy_user }}/etherpad/settings.json
     mode=0640
-    owner={{ etherpad.deploy_user }}
+    owner={{ etherpad_deploy_user }}
   notify:
     - Restart etherpad
 
 - name: Creates node_modules dir
-  sudo_user: "{{ etherpad.deploy_user }}"
+  sudo_user: "{{ etherpad_deploy_user }}"
   sudo: true
   file:
-    path=~{{ etherpad.deploy_user }}/etherpad/node_modules/
+    path=~{{ etherpad_deploy_user }}/etherpad/node_modules/
     state=directory
-    owner={{ etherpad.deploy_user }}
+    owner={{ etherpad_deploy_user }}
   notify:
     - Restart etherpad
 
 - name: Prepares node env
   file:
-    path=~{{ etherpad.deploy_user }}/etherpad/node_modules/ep_etherpad-lite
-    src=~{{ etherpad.deploy_user }}/etherpad/src
+    path=~{{ etherpad_deploy_user }}/etherpad/node_modules/ep_etherpad-lite
+    src=~{{ etherpad_deploy_user }}/etherpad/src
     state=link
   notify:
     - Restart etherpad
 
 - name: Installs necessary JS prereqs
-  npm: path=/home/{{ etherpad.deploy_user }}/etherpad/node_modules/ep_etherpad-lite
+  npm: path=/home/{{ etherpad_deploy_user }}/etherpad/node_modules/ep_etherpad-lite
   notify:
     - Restart etherpad
 
 - name: Adds nginx config
   template:
-    src="../templates/etherpad.conf.j2"
-    dest="/etc/nginx/sites-available/etherpad.conf"
+    src="../templates/etherpad_conf.j2"
+    dest="/etc/nginx/sites-available/etherpad_conf"
   notify: Restart nginx
-  when: etherpad.path != '/'
+  when: etherpad_path != '/'
   tags:
     - nginx
 
 - name: Overwrites default symlink
   file:
-    src=/etc/nginx/sites-available/etherpad.conf
+    src=/etc/nginx/sites-available/etherpad_conf
     dest=/etc/nginx/sites-enabled/default
     state=link
     force=yes
-  when: etherpad.path != '/'    
+  when: etherpad_path != '/'    
   notify: Restart nginx
   tags:
     - nginx
 
 - name: Creates var and log dirs
   file: dest={{ item }}/etherpad/
-    owner={{ etherpad.deploy_user }}
+    owner={{ etherpad_deploy_user }}
     group=admin
     mode=755
     state=directory
   with_items:
-    - "{{etherpad.log_parent_dir}}"
-    - "~{{ etherpad.deploy_user }}/etherpad/var"
+    - "{{etherpad_log_parent_dir}}"
+    - "~{{ etherpad_deploy_user }}/etherpad/var"
   notify: Restart etherpad
 
 - name: Check if firewall is opened
@@ -151,7 +151,7 @@
   changed_when: needs_iptables.stdout.find("etherpad") == -1
 
 - name: Open firewall
-  shell: iptables -A TCP_IN -p tcp -m tcp --dport {{ etherpad.port}} -j ACCEPT -m comment --comment etherpad
+  shell: iptables -A TCP_IN -p tcp -m tcp --dport {{ etherpad_port}} -j ACCEPT -m comment --comment etherpad
   ignore_errors: true
   when: needs_iptables | changed
 
