@@ -20,3 +20,4 @@ etherpad_packages:
     - libssl-dev
     - pkg-config
     - build-essential
+    - python-mysqldb

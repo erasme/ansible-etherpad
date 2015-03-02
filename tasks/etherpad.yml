@@ -75,7 +75,7 @@
   notify: Restart etherpad
 
 - name: Create etherpad startup script
-  template: src="../templates/upstart_etherpad_conf.json.j2" dest=/etc/init/etherpad_conf mode=0644
+  template: src="../templates/upstart_etherpad.conf.json.j2" dest=/etc/init/etherpad.conf mode=0644
   notify:
     - Restart etherpad
 
@@ -117,7 +117,7 @@
 - name: Adds nginx config
   template:
     src="../templates/etherpad_conf.j2"
-    dest="/etc/nginx/sites-available/etherpad_conf"
+    dest="/etc/nginx/sites-available/etherpad.conf"
   notify: Restart nginx
   when: etherpad_path != '/'
   tags:
@@ -125,7 +125,7 @@
 
 - name: Overwrites default symlink
   file:
-    src=/etc/nginx/sites-available/etherpad_conf
+    src=/etc/nginx/sites-available/etherpad.conf
     dest=/etc/nginx/sites-enabled/default
     state=link
     force=yes

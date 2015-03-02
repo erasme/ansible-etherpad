@@ -20,6 +20,7 @@ The following packages will be installed by this role :
   - libssl-dev
   - pkg-config
   - build-essential
+  - python-mysqldb
 
 Role Variables
 --------------
