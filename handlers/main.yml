@@ -1,0 +1,5 @@
+- name: Restart etherpad
+  service: name=etherpad state=restarted
+
+- name: Check etherpad
+  wait_for: port={{etherpad.port}} delay=5 timeout=10

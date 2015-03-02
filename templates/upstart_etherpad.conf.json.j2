@@ -1,0 +1,18 @@
+description "etherpad"
+
+start on started networking
+stop on runlevel [!2345]
+
+env EPHOME=/home/{{ etherpad.deploy_user }}/etherpad/
+env EPLOGS={{ etherpad.log_parent_dir }}/etherpad/
+env EPUSER={{ etherpad.deploy_user }}
+
+respawn
+
+
+script
+  exec > $EPLOGS/access.log
+  exec 2> $EPLOGS/error.log
+  cd $EPHOME
+  exec su -s /bin/sh -c 'exec "$0" "$@"' $EPUSER -- node node_modules/ep_etherpad-lite/node/server.js
+end script
