@@ -137,7 +137,6 @@
 - name: Creates var and log dirs
   file: dest={{ item }}/etherpad/
     owner={{ etherpad_deploy_user }}
-    group=admin
     mode=755
     state=directory
   with_items:
