@@ -148,12 +148,13 @@
   shell: iptables-save
   register: needs_iptables
   changed_when: needs_iptables.stdout.find("etherpad") == -1
+  when: firewall_rules_file
 
 - name: Open firewall
-  shell: iptables -A TCP_IN -p tcp -m tcp --dport {{ etherpad_port}} -j ACCEPT -m comment --comment etherpad
+  shell: iptables -A TCP_IN -p tcp -m tcp --dport {{ etherpad_port }} -j ACCEPT -m comment --comment etherpad
   ignore_errors: true
   when: needs_iptables | changed
 
 - name: Saves firewall
-  shell: iptables-save > {{ firewall.rules_file }}
+  shell: iptables-save > {{ firewall_rules_file }}
   when: needs_iptables | changed
