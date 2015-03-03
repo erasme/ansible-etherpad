@@ -3,9 +3,9 @@ description "etherpad"
 start on started networking
 stop on runlevel [!2345]
 
-env EPHOME=/home/{{ etherpad.deploy_user }}/etherpad/
-env EPLOGS={{ etherpad.log_parent_dir }}/etherpad/
-env EPUSER={{ etherpad.deploy_user }}
+env EPHOME=/home/{{ etherpad_deploy_user }}/etherpad/
+env EPLOGS={{ etherpad_log_parent_dir }}/etherpad/
+env EPUSER={{ etherpad_deploy_user }}
 
 respawn
 

@@ -4,23 +4,23 @@
   "favicon": "favicon.ico",
 
 
-{% if etherpad.path != '/' %}
+{% if etherpad_path != '/' %}
 /* we have a local nginx frontend */
   "ip": "127.0.0.1",
-  "port" : {{ etherpad.port|int + 1 }},
+  "port" : {{ etherpad_port|int + 1 }},
 {% else %}
   "ip": "{{ ansible_eth0.ipv4.address }}",
-  "port" : {{ etherpad.port }}, 
+  "port" : {{ etherpad_port }}, 
 {% endif %}
 
-  "sessionKey" : "{{ etherpad.session_key }}",
+  "sessionKey" : "{{ etherpad_session_key }}",
 
   "dbType" : "mysql",
   "dbSettings" : {
-                    "user"    : "{{ etherpad.database.user }}",
-                    "host"    : "{{ etherpad.database.host }}",
-                    "password": "{{ etherpad.database.password }}",
-                    "database": "{{ etherpad.database.name }}"
+                    "user"    : "{{ etherpad_database.user }}",
+                    "host"    : "{{ etherpad_database.host }}",
+                    "password": "{{ etherpad_database.password }}",
+                    "database": "{{ etherpad_database.name }}"
                   },
   "defaultPadText" : "Welcome to Etherpad Lite!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http:\/\/etherpad.org\n",
   "requireSession" : false,
