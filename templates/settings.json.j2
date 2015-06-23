@@ -9,7 +9,7 @@
   "ip": "127.0.0.1",
   "port" : {{ etherpad_port|int + 1 }},
 {% else %}
-  "ip": "{{ ansible_default_ipv4 }}",
+  "ip": "{{ ansible_default_ipv4['address'] }}",
   "port" : {{ etherpad_port }}, 
 {% endif %}
 
