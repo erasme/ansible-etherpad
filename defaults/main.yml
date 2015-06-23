@@ -1,23 +1,26 @@
 etherpad_deploy_user: etherpad
 etherpad_log_parent_dir: /var/log/
-etherpad_port: 9001
-etherpad_session_key: "demniwosk0kucindegvichonpirawecs"
-etherpad_version: master
-etherpad_path: '/'
-etherpad_repos: https://github.com/ether/etherpad-lite.git
-
-etherpad_database:
-  name: dbname
-  user: username
-  host: dbhost
-  password: "password"
-
 etherpad_packages:
-    - gzip
-    - git-core
-    - curl
-    - python
-    - libssl-dev
-    - pkg-config
-    - build-essential
-    - python-mysqldb
+  - gzip
+  - git-core
+  - curl
+  - python
+  - libssl-dev
+  - pkg-config
+  - build-essential
+  - python-mysqldb
+etherpad_path: '/'
+etherpad_port: 9001
+etherpad_repos: https://github.com/ether/etherpad-lite.git
+etherpad_version: master
+
+# Set these
+etherpad_database: false
+# etherpad_database:
+#   name: dbname
+#   user: username
+#   host: dbhost
+#   password: "password"
+etherpad_session_key: false
+# etherpad_session_key: "abcdefghijklmnopqrstuvwxyz123456"
+

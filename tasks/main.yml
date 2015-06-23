@@ -1,2 +1,3 @@
+- include; check_vars.yml tags=etherpad,check_vars
 - include: etherpad.yml tags=etherpad
 
