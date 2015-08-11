@@ -13,26 +13,26 @@
   tags: test
 
 - name: Creates deploy user
-  user: >
-    name={{ etherpad_deploy_user }}
-    comment="Service docs user"
+  user:
+    name: "{{ etherpad_deploy_user }}"
+    comment: "laclasse user"
   notify: Restart etherpad
 
 - name: Creates deploy directory
-  file: >
-    path=~{{ etherpad_deploy_user }}/etherpad/
-    owner={{ etherpad_deploy_user }}
-    state=directory
+  file:
+    path: "~{{ etherpad_deploy_user }}/etherpad/"
+    owner: "{{ etherpad_deploy_user }}"
+    state: directory
   notify: Restart etherpad
 
 - name: Checkout app
   sudo_user: "{{ etherpad_deploy_user }}"
   sudo: true
-  git: >
-    repo={{ etherpad_repos }}
-    dest=~{{ etherpad_deploy_user }}/etherpad/
-    version={{ etherpad_version }}
-    accept_hostkey=true
+  git:
+    repo: "{{ etherpad_repos }}"
+    dest: "~{{ etherpad_deploy_user }}/etherpad/"
+    version: "{{ etherpad_version }}"
+    accept_hostkey: true
   register: new_version
   ignore_errors: true
   notify: Restart etherpad
@@ -45,44 +45,44 @@
 - debug: var=git_tag.stdout
 
 - name: Installs necessary prereqs
-  apt: >
-    pkg={{ item }}
-    state=latest
+  apt:
+    pkg: "{{ item }}"
+    state: latest
   with_items: etherpad_packages
 
 - name: Creates database
-  mysql_db: >
-    name={{ etherpad_database.name }}
-    state=present
+  mysql_db:
+    name: "{{ etherpad_database.name }}"
+    state: present
   delegate_to: "{{ database_delegate_hostname }}"
   register: db_created
   notify: Restart etherpad
 
 - name: Creates database user
-  mysql_user: >
-    user="{{ etherpad_database.user }}"
-    password="{{ etherpad_database.password }}"
-    priv="{{ etherpad_database.name }}.*:ALL"
-    host="{{ inventory_hostname }}"
+  mysql_user:
+    user: "{{ etherpad_database.user }}"
+    password: "{{ etherpad_database.password }}"
+    priv: "{{ etherpad_database.name }}.*:ALL"
+    host: "{{ inventory_hostname }}"
   delegate_to: "{{ database_delegate_hostname }}"
   register: dbuser_created
   notify: Restart etherpad
 
 - name: Creates database user
-  mysql_user: >
-    user="{{ etherpad_database.user }}"
-    password="{{ etherpad_database.password }}"
-    priv="{{ etherpad_database.name }}.*:ALL"
-    host="localhost"
+  mysql_user:
+    user: "{{ etherpad_database.user }}"
+    password: "{{ etherpad_database.password }}"
+    priv: "{{ etherpad_database.name }}.*:ALL"
+    host: "localhost"
   delegate_to: "{{ database_delegate_hostname }}"
   register: dbuser_created
   notify: Restart etherpad
 
 - name: Create etherpad startup script
-  template: >
-    src="../templates/upstart_etherpad.conf.json.j2" 
-    dest=/etc/init/etherpad.conf 
-    mode=0644
+  template:
+    src: "../templates/upstart_etherpad.conf.json.j2"
+    dest: /etc/init/etherpad.conf
+    mode: 0644
   notify:
     - Restart etherpad
 
@@ -90,64 +90,64 @@
   service: name=etherpad enabled=yes
 
 - name: Configure etherpad-lite
-  template: >
-    src="../templates/settings.json.j2"
-    dest=~{{ etherpad_deploy_user }}/etherpad/settings.json
-    mode=0640
-    owner={{ etherpad_deploy_user }}
+  template:
+    src: "../templates/settings.json.j2"
+    dest: "~{{ etherpad_deploy_user }}/etherpad/settings.json"
+    mode: 0640
+    owner: "{{ etherpad_deploy_user }}"
   notify:
     - Restart etherpad
 
 - name: Creates node_modules dir
   sudo_user: "{{ etherpad_deploy_user }}"
   sudo: true
-  file: >
-    path=~{{ etherpad_deploy_user }}/etherpad/node_modules/
-    state=directory
-    owner={{ etherpad_deploy_user }}
+  file:
+    path: "~{{ etherpad_deploy_user }}/etherpad/node_modules/"
+    state: directory
+    owner: "{{ etherpad_deploy_user }}"
   notify:
     - Restart etherpad
 
 - name: Prepares node env
-  file: >
-    path=~{{ etherpad_deploy_user }}/etherpad/node_modules/ep_etherpad-lite
-    src=~{{ etherpad_deploy_user }}/etherpad/src
-    state=link
+  file:
+    path: "~{{ etherpad_deploy_user }}/etherpad/node_modules/ep_etherpad-lite"
+    src: "~{{ etherpad_deploy_user }}/etherpad/src"
+    state: link
   notify:
     - Restart etherpad
 
 - name: Installs necessary JS prereqs
-  npm: >
-    path=/home/{{ etherpad_deploy_user }}/etherpad/node_modules/ep_etherpad-lite
+  npm:
+    path: "/home/{{ etherpad_deploy_user }}/etherpad/node_modules/ep_etherpad-lite"
   notify:
     - Restart etherpad
 
 - name: Adds nginx config
-  template: >
-    src="../templates/etherpad.conf.j2"
-    dest="/etc/nginx/sites-available/etherpad.conf"
+  template:
+    src: "../templates/etherpad.conf.j2"
+    dest: "/etc/nginx/sites-available/etherpad.conf"
   notify: Restart nginx
   when: etherpad_path != '/'
   tags:
     - nginx
 
 - name: Overwrites default symlink
-  file: >
-    src=/etc/nginx/sites-available/etherpad.conf
-    dest=/etc/nginx/sites-enabled/default
-    state=link
-    force=yes
-  when: etherpad_path != '/'    
+  file:
+    src: /etc/nginx/sites-available/etherpad.conf
+    dest: /etc/nginx/sites-enabled/default
+    state: link
+    force: yes
+  when: etherpad_path != '/'
   notify: Restart nginx
   tags:
     - nginx
 
 - name: Creates var and log dirs
   file: >
-    dest={{ item }}/etherpad/
-    owner={{ etherpad_deploy_user }}
-    mode=755
-    state=directory
+    dest: "{{ item }}/etherpad/"
+    owner: "{{ etherpad_deploy_user }}"
+    mode: 755
+    state: directory
   with_items:
     - "{{etherpad_log_parent_dir}}"
     - "~{{ etherpad_deploy_user }}/etherpad/var"
