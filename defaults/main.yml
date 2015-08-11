@@ -1,5 +1,6 @@
 etherpad_deploy_user: etherpad
 etherpad_log_parent_dir: /var/log/
+# Do not add nodejs here, it is a deppendency
 etherpad_packages:
   - gzip
   - git-core

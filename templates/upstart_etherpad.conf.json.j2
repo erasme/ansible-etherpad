@@ -7,12 +7,16 @@ env EPHOME=/home/{{ etherpad_deploy_user }}/etherpad/
 env EPLOGS={{ etherpad_log_parent_dir }}/etherpad/
 env EPUSER={{ etherpad_deploy_user }}
 
-respawn
-
+respawn limit 10 5
+#setgid erasme
+#setuid erasme
+#chdir /home/erasme/etherpad/
 
 script
   exec > $EPLOGS/access.log
   exec 2> $EPLOGS/error.log
   cd $EPHOME
   exec su -s /bin/sh -c 'exec "$0" "$@"' $EPUSER -- node node_modules/ep_etherpad-lite/node/server.js
+#  exec node node_modules/ep_etherpad-lite/node/server.js
 end script
+

@@ -16,6 +16,6 @@ galaxy_info:
     - development
 
 dependencies:
-  - role: erasme.nodejs
-  - role: erasme.nginx
+  - role: ansible-nodejs
+  - role: ansible-nginx
     when: etherpad_path != '/'

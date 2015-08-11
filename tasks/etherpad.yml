@@ -124,7 +124,7 @@
 
 - name: Adds nginx config
   template: >
-    src="../templates/etherpad_conf.j2"
+    src="../templates/etherpad.conf.j2"
     dest="/etc/nginx/sites-available/etherpad.conf"
   notify: Restart nginx
   when: etherpad_path != '/'
@@ -153,6 +153,10 @@
     - "~{{ etherpad_deploy_user }}/etherpad/var"
   notify: Restart etherpad
 
+- name: Start if just installed
+  service: name=etherpad state=started
+  when: new_version|changed
+
 - name: Check if firewall is opened
   shell: iptables-save
   register: needs_iptables
@@ -167,3 +171,4 @@
 - name: Saves firewall
   shell: iptables-save > {{ firewall_rules_file }}
   when: needs_iptables | changed
+
