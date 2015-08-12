@@ -131,10 +131,10 @@
   tags:
     - nginx
 
-- name: Overwrites default symlink
+- name: Symlinks config
   file:
     src: /etc/nginx/sites-available/etherpad.conf
-    dest: /etc/nginx/sites-enabled/default
+    dest: /etc/nginx/sites-enabled/etherpad
     state: link
     force: yes
   when: etherpad_path != '/'
