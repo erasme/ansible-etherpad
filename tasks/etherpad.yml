@@ -40,6 +40,7 @@
 - name: Gets current tag
   shell: cd ~{{ etherpad_deploy_user }}/etherpad/ && git describe --always --tag
   changed_when: false
+  always_run: yes
   register: git_tag
 
 - debug: var=git_tag.stdout
