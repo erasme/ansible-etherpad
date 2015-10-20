@@ -23,6 +23,9 @@ server {
     root /var/lib/nginx/;
   }
 
+
+  # WARNING: enter pad path with trailing /, e.g.:
+  # rewrite /pads/?(.+)  /$1  break;
   location {{etherpad_path}} {
     rewrite {{etherpad_path}}?(.+)  /$1  break;
     proxy_pass http://localhost:{{etherpad_port|int + 1}}/;
