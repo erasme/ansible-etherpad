@@ -57,6 +57,7 @@
     state: present
   delegate_to: "{{ database_delegate_hostname }}"
   register: db_created
+  when: not etherpad_skip_database
   notify: Restart etherpad
 
 - name: Creates database user
@@ -67,6 +68,7 @@
     host: "{{ inventory_hostname }}"
   delegate_to: "{{ database_delegate_hostname }}"
   register: dbuser_created
+  when: not etherpad_skip_database
   notify: Restart etherpad
 
 - name: Creates database user
@@ -77,6 +79,7 @@
     host: "localhost"
   delegate_to: "{{ database_delegate_hostname }}"
   register: dbuser_created
+  when: not etherpad_skip_database
   notify: Restart etherpad
 
 - name: Create etherpad startup script

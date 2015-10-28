@@ -24,3 +24,6 @@ etherpad_database: false
 etherpad_session_key: false
 # etherpad_session_key: "abcdefghijklmnopqrstuvwxyz123456"
 
+# Skips DB & user creation
+etherpad_skip_database: false
+
